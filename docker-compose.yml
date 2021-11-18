@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+  db:
+    image: mariadb:10
+    env_file:
+      - .env
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: ${SS_DATABASE_PASSWORD}
+      MYSQL_PASSWORD: ${SS_DATABASE_PASSWORD}
+      MYSQL_USER: ${SS_DATABASE_USERNAME}
+      MYSQL_DATABASE: ${SS_DATABASE_NAME}
+      MYSQL_INITDB_SKIP_TZINFO: 0

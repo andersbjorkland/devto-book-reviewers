@@ -9,6 +9,8 @@ use SilverStripe\Admin\ModelAdmin;
 
 class ReviewAdmin extends ModelAdmin
 {
+    // private static $required_permission_codes = "CMS_ACCESS";
+
     private static $managed_models = [
         Author::class,
         Book::class,

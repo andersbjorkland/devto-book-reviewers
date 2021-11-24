@@ -2,8 +2,10 @@
 
 namespace App\Model;
 
+use App\Admin\ReviewAdmin;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
+use SilverStripe\Security\Permission;
 use SilverStripe\Security\Security;
 
 class Review extends DataObject
@@ -52,4 +54,37 @@ class Review extends DataObject
 
         return $result;
     }
+
+    public function canView($member = null) 
+    {
+        return Permission::check('CMS_ACCESS_' . ReviewAdmin::class, 'any', $member);
+    }
+
+    public function canEdit($member = null) 
+    {
+        $reviewer = $this->Member()->ID;
+        $currentUser = Security::getCurrentUser()->ID;
+        if ($reviewer === $currentUser) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function canDelete($member = null) 
+    {
+        $reviewer = $this->Member()->ID;
+        $currentUser = Security::getCurrentUser()->ID;
+        if ($reviewer === $currentUser) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function canCreate($member = null, $context = []) 
+    {
+        return Permission::check('CMS_ACCESS_' . ReviewAdmin::class, 'any', $member);
+    }
+
 }

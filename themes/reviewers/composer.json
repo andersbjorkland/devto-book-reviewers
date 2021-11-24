@@ -1,0 +1,25 @@
+{
+    "type": "silverstripe-theme",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Anders Björkland",
+            "homepage": "https://andersbjorkland.online"
+        }
+    ],
+    "require": {
+        "composer/installers": "*",
+        "silverstripe/framework": ">=3.5"
+    },
+	"extra": {
+		"branch-alias": {
+			"dev-master": "3.2.x-dev"
+		},
+        "expose": [
+            "css",
+            "images",
+            "javascript",
+            "webfonts"
+        ]
+	}
+}

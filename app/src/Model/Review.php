@@ -2,7 +2,13 @@
 
 namespace App\Model;
 
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\Tab;
+use SilverStripe\Forms\TabSet;
 use App\Admin\ReviewAdmin;
+use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Forms\FormAction;
+use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Permission;
@@ -85,6 +91,17 @@ class Review extends DataObject
     public function canCreate($member = null, $context = []) 
     {
         return Permission::check('CMS_ACCESS_' . ReviewAdmin::class, 'any', $member);
+    }
+
+    public function getCMSActions()
+    {
+        $actions = parent::getCMSActions();
+        $buttons = $actions->fieldByName('MajorActions');
+        $buttons->push($newFields = FormAction::create('searchGoogleBooks', 'Search'));
+ 
+        $newFields ->addExtraClass('btn-outline-primary font-icon-tick')
+            ->setUseButtonTag(true);
+        return $actions;
     }
 
 }

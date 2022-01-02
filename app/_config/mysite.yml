@@ -4,6 +4,8 @@ Name: myproject
 SilverStripe\Core\Manifest\ModuleManifest:
   project: app
 
+---
+
 # UTF8MB4 has limited support in older MySQL versions.
 # Remove this configuration if you experience issues.
 ---

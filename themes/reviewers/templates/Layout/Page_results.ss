@@ -40,7 +40,7 @@
                     <% if $CurrentBool %>
                     $PageNum
                     <% else %>
-                    <a href="$Link" title="View page number $PageNum" class="go-to-page">$PageNum</a>
+                    <p><a href="$Link" title="View page number $PageNum" class="go-to-page">$PageNum</a></p>
                     <% end_if %>
                 <% end_loop %>
             </span>

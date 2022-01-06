@@ -11,6 +11,7 @@ class Author extends DataObject
     private static $table_name = "Author";
 
     private static $db = [
+        'Name' => 'Varchar(255)',
         'GivenName' => 'Varchar(255)',
         'AdditionalName' => 'Varchar(255)',
         'FamilyName' => 'Varchar(255)',

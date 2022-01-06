@@ -11,6 +11,7 @@ class Book extends DataObject
     private static $table_name = "Book";
 
     private static $db = [
+        'VolumeID' => 'Varchar(255)',
         'Title' => 'Varchar(255)',
         'ISBN' => 'Varchar(255)',
         'Description' => 'Text',

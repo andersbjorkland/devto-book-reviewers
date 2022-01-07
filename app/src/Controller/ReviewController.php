@@ -2,13 +2,16 @@
 
 namespace App\Controller;
 
+use App\Admin\ReviewAdmin;
 use SilverStripe\Forms\TextareaField;
 use SilverStripe\Forms\TextField;
 use App\Model\Author;
 use App\Model\Book;
+use App\Model\Review;
 use App\Service\GoogleBookParser;
 use SilverStripe\CMS\Controllers\ContentController;
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\Form;
@@ -16,6 +19,7 @@ use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\HiddenField;
 use SilverStripe\Forms\RequiredFields;
 use SilverStripe\ORM\ArrayList;
+use SilverStripe\Security\Permission;
 use SilverStripe\Security\Security;
 use Symfony\Component\HttpClient\HttpClient;
 
@@ -29,7 +33,14 @@ class ReviewController extends ContentController
 
     private static $url_segment = 'review';
 
-    private string $volumeId = '';
+    public function init() 
+    {
+        parent::init();
+
+        if(!Permission::check('CMS_ACCESS_' . ReviewAdmin::class)) {
+            return $this->redirect('/Security/login?BackURL=' . $this->request->getURL());
+        }
+    }
 
     public function index(HTTPRequest $request)
     {
@@ -86,7 +97,6 @@ class ReviewController extends ContentController
     public function book(HTTPRequest $request)
     {
         $volumeId = $request->param('ID');
-        $this->volumeId = $volumeId;
         $client = HttpClient::create();
         $response = $client->request('GET', 'https://www.googleapis.com/books/v1/volumes/' . $volumeId);
         $googleBook = GoogleBookParser::parse($response->toArray());
@@ -134,36 +144,6 @@ class ReviewController extends ContentController
             $book->write();
         }
 
-        $fields = new FieldList(
-            [
-                HiddenField::create(
-                    'VolumeId',
-                    'VolumeId',
-                    $volumeId
-                ),
-                TextField::create(
-                    'Title',
-                    'Title'
-                ),
-                DropdownField::create(
-                    'Rating',
-                    'Rating',
-                    [
-                        '1' => 1,
-                        '2' => 2,
-                        '3' => 3,
-                        '4' => 4,
-                        '5' => 5
-                    ]
-                ),
-                TextareaField::create(
-                    'Review',
-                    'Review'
-                )
-            ]
-        );
-
-
         return $this->customise([
             'Layout' => $this
                         ->customise([
@@ -176,16 +156,28 @@ class ReviewController extends ContentController
 
     public function reviewForm()
     {
+        $currentUser = Security::getCurrentUser();
+        $volumeId = $this->request->param('ID');
+        $book = Book::get()->filter(['VolumeID' => $volumeId])->first();
+        $review = Review::get()->filter(['MemberID' => $currentUser->ID, 'BookID' => $book->ID])->first();
+
         $fields = new FieldList(
             [
                 HiddenField::create(
+                    'ReviewId',
+                    'ReviewId',
+                    $review ? $review->ID : null
+                ),
+                HiddenField::create(
                     'VolumeId',
                     'VolumeId',
-                    $this->volumeId
+                    $volumeId
                 ),
                 TextField::create(
                     'Title',
-                    'Title'
+                    'Title',
+                    $review ? $review->Title : null
+
                 ),
                 DropdownField::create(
                     'Rating',
@@ -197,10 +189,11 @@ class ReviewController extends ContentController
                         '4' => 4,
                         '5' => 5
                     ]
-                ),
+                )->setValue($review ? $review->Rating : null),
                 TextareaField::create(
                     'Review',
-                    'Review'
+                    'Review',
+                    $review ? $review->Review : null
                 )
             ]
         );
@@ -213,7 +206,21 @@ class ReviewController extends ContentController
     public function doReview($data, Form $form)
     {
         $user = Security::getCurrentUser();
-        return "Hello Review!!!";
+        $book = Book::get()->filter(['VolumeID' => $data['VolumeId']])->first();
+        $review = $data['ReviewId'] ? Review::get_by_id($data['ReviewId']) : Review::create();
+        $review->Title = $data['Title'];
+        $review->Rating = $data['Rating'];
+        $review->Review = $data['Review'];
+
+        if ($user) {
+            $review->Member = $user;
+        }
+
+        $review->Book = $book;
+        $review->write();
+
+        $form->sessionMessage('Your review has been saved', 'good');
+        return $this->redirectBack();
     }
 
     protected function paginator($query, $count, $startIndex, $perPage): array

@@ -74,12 +74,24 @@ class HomepageController extends ContentController
 
     public function BookQuery($query)
     {
-        $books = Book::get()->filter(['Title:PartialMatch' => $query]);
+        $books = Book::get()->filter([
+            'Title:PartialMatch' => $query,
+            'Reviews.Count():GreaterThan' => 0
+        ]);
         return $books;
     }
 
-    public function SearchForm()
+    public function AverageRating($bookId)
     {
-        return '😝';
+        $book = Book::get()->byID($bookId);
+        $reviews = $book->Reviews();
+        $totalRating = 0;
+        foreach ($reviews as $review) {
+            $totalRating += $review->Rating;
+        }
+
+        $count = $reviews->count();
+        $averageRating = $count ? round($totalRating / $count) : 0;
+        return $this->RatingStars($averageRating);
     }
 }

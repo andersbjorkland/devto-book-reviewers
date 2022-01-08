@@ -7,7 +7,7 @@
             <p class="searchQuery">Results for "$Query"</p>
             <ul id="SearchResults">
 
-                <% loop $BookQuery($Query) %>
+                <% loop $PaginatedBooks %>
                     <li>
                         <h4>
                             $Title
@@ -25,6 +25,26 @@
                 <% end_loop %>
 
             </ul>
+            <% if $PaginatedBooks.MoreThanOnePage %>
+                <% if $PaginatedBooks.NotFirstPage %>
+                    <a class="prev" href="$PaginatedBooks.PrevLink">Prev</a>
+                <% end_if %>
+                <% loop $PaginatedBooks.PaginationSummary %>
+                    <% if $CurrentBool %>
+                        $PageNum
+                    <% else %>
+                        <% if $Link %>
+                            <a href="$Link">$PageNum</a>
+                        <% else %>
+                            ...
+                        <% end_if %>
+                    <% end_if %>
+                <% end_loop %>
+                <% if $PaginatedBooks.NotLastPage %>
+                    <a class="next" href="$PaginatedBooks.NextLink">Next</a>
+                <% end_if %>
+            <% end_if %>
+
             <div id="PageNumbers">
                 <div class="pagination">
 

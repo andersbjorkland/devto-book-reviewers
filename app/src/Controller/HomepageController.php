@@ -9,6 +9,7 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\Form;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\TextField;
+use SilverStripe\ORM\PaginatedList;
 
 class HomepageController extends ContentController
 {
@@ -93,5 +94,13 @@ class HomepageController extends ContentController
         $count = $reviews->count();
         $averageRating = $count ? round($totalRating / $count) : 0;
         return $this->RatingStars($averageRating);
+    }
+
+    public function PaginatedBooks()
+    {
+        $query = $this->request->getVars('q')['q'] ?? '';
+        $books = $this->BookQuery($query);
+        
+        return (new PaginatedList($books, $this->getRequest()))->setPageLength(5);
     }
 }

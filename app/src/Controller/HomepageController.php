@@ -75,9 +75,13 @@ class HomepageController extends ContentController
 
     public function BookQuery($query)
     {
-        $books = Book::get()->filter([
-            'Title:PartialMatch' => $query,
+        $books = Book::get()
+        ->filter([
             'Reviews.Count():GreaterThan' => 0
+        ])
+        ->filterAny([
+            'Title:PartialMatch' => $query,
+            'Authors.Name:PartialMatch' => $query,
         ]);
         return $books;
     }

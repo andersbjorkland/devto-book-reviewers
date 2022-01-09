@@ -13,8 +13,14 @@
                             $Title
                         </h4>
                         <div>
-                            <% loop $authors %>
-                                <p>$AuthorName</p>
+                            <% loop $Authors %>
+                                <p>
+                                    <% if $Name %>
+                                        $Name
+                                    <% else %>
+                                        $GivenName $AdditionalName $FamilyName
+                                <% end_if %>
+                                </p>
                             <% end_loop %>
                         </div>
                         <p>

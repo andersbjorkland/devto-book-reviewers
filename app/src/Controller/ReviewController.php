@@ -27,10 +27,8 @@ class ReviewController extends ContentController
     private static $allowed_actions = [
         'index',
         'book',
-        'reviewForm'
+        'ReviewForm'
     ];
-
-    private static $url_segment = 'review';
 
     public function init() 
     {
@@ -153,7 +151,7 @@ class ReviewController extends ContentController
 
     }
 
-    public function reviewForm()
+    public function ReviewForm()
     {
         $currentUser = Security::getCurrentUser();
         $volumeId = $this->request->param('ID');
@@ -197,24 +195,20 @@ class ReviewController extends ContentController
             ]
         );
 
-        $form = Form::create($this, 'reviewForm', $fields, new FieldList(FormAction::create('doReview', 'Submit')), new RequiredFields('Title', 'Rating'));
+        $form = Form::create($this, 'ReviewForm', $fields, new FieldList(FormAction::create('doReview', 'Submit')), new RequiredFields('Title', 'Rating'));
         $form->setFormAction('/review/ReviewForm/');
         return $form;
     }
 
     public function doReview($data, Form $form)
     {
-        $user = Security::getCurrentUser();
         $book = Book::get()->filter(['VolumeID' => $data['VolumeId']])->first();
+        
         $review = $data['ReviewId'] ? Review::get_by_id($data['ReviewId']) : Review::create();
         $review->Title = $data['Title'];
         $review->Rating = $data['Rating'];
         $review->Review = $data['Review'];
-
-        if ($user) {
-            $review->Member = $user;
-        }
-
+        $review->Member = Security::getCurrentUser();;
         $review->Book = $book;
         $review->write();
 

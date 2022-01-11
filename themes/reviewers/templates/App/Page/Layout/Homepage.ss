@@ -1,4 +1,5 @@
 <section class="container">
+    <h1>The Home of Book Reviewers</h1>
     <div class="Actions line">
         $SearchBookForm
     </div>

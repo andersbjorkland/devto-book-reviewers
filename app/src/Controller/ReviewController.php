@@ -203,7 +203,6 @@ class ReviewController extends ContentController
     public function doReview($data, Form $form)
     {
         $book = Book::get()->filter(['VolumeID' => $data['VolumeId']])->first();
-        
         $review = $data['ReviewId'] ? Review::get_by_id($data['ReviewId']) : Review::create();
         $review->Title = $data['Title'];
         $review->Rating = $data['Rating'];

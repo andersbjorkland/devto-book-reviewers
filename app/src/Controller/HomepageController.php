@@ -14,16 +14,8 @@ use SilverStripe\ORM\PaginatedList;
 class HomepageController extends ContentController
 {
     private static $allowed_actions = [
-        'index',
         'SearchBookForm'
     ];
-
-    private string $query = "";
-
-    public function index()
-    {
-        return $this->render();
-    }
 
     public function LatestReviews()
     {
@@ -54,7 +46,6 @@ class HomepageController extends ContentController
             )
         );
         $form->setFormMethod('GET');
-        // $form->setFormAction($this->Link('book'));
         return $form;
     }
 
@@ -72,8 +63,15 @@ class HomepageController extends ContentController
         return $this->request->getVars('q')['q'] ?? '';
     }
 
+    public function PaginatedBooks()
+    {
+        $query = $this->request->getVars('q')['q'] ?? '';
+        $books = $this->bookQuery($query);
+        
+        return (new PaginatedList($books, $this->getRequest()))->setPageLength(5);
+    }
 
-    public function BookQuery($query)
+    private function bookQuery($query)
     {
         $books = Book::get()
         ->filter([
@@ -98,13 +96,5 @@ class HomepageController extends ContentController
         $count = $reviews->count();
         $averageRating = $count ? round($totalRating / $count) : 0;
         return $this->RatingStars($averageRating);
-    }
-
-    public function PaginatedBooks()
-    {
-        $query = $this->request->getVars('q')['q'] ?? '';
-        $books = $this->BookQuery($query);
-        
-        return (new PaginatedList($books, $this->getRequest()))->setPageLength(5);
     }
 }

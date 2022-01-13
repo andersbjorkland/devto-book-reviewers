@@ -10,6 +10,10 @@ class Book extends DataObject
 {
     private static $table_name = "Book";
 
+    private static $casting = [
+        'DescriptionHTML' => 'HTMLText'
+    ];
+
     private static $db = [
         'VolumeID' => 'Varchar(255)',
         'Title' => 'Varchar(255)',
@@ -43,6 +47,33 @@ class Book extends DataObject
     public function canCreate($member = null, $context = []) 
     {
         return Permission::check('CMS_ACCESS_' . ReviewAdmin::class, 'any', $member);
+    }
+
+    public function getAverageRating()
+    {
+        $reviews = $this->Reviews();
+        $total = 0;
+        foreach ($reviews as $review) {
+            $total += $review->Rating;
+        }
+
+        $count = $reviews->count();
+        return $count === 0 ? 0 : $total / $count;
+    }
+
+    public function getAverageRatingStars()
+    {
+        $rating = $this->getAverageRating();
+        $stars = '';
+        for ($i = 1; $i <= $rating; $i++) {
+            $stars .= '⭐';
+        }
+        return $stars;
+    }
+
+    public function DescriptionHTML()
+    {
+        return $this->Description;
     }
     
 }

@@ -104,4 +104,14 @@ class Review extends DataObject
         return $actions;
     }
 
+    public function getRatingStars()
+    {
+        $rating = $this->Rating;
+        $stars = '';
+        for ($i = 1; $i <= $rating; $i++) {
+            $stars .= '⭐';
+        }
+        return $stars;
+    }
+
 }

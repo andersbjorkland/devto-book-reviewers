@@ -86,7 +86,7 @@ class ReviewController extends ContentController
                             'Languages' => ArrayList::create($languageCodes),
                             'LangRestriction' => $langRestriction
                         ])
-                        ->renderWith('Layout/Books'),
+                        ->renderWith('Layout/GoogleBooks'),
             
         ])->renderWith(['Page']);
     }
